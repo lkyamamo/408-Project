@@ -32,18 +32,11 @@ class Point_Charge_System:
             return E
         return electric_field
     
-    def get_potential_field(self):
-        def potential_field(x,y,z):
-            r = np.array([x,y,z])
-            V = 0
-            for q in self.charges:
-                distance = np.linalg.norm(r - q.position)
-                result = 0
-                if distance != 0:
-                    result = self.constants.Coulomb_Constant * q.charge / distance
-                V += result
-            return V
-        return potential_field
+    def get_potential_field(self, X, Y, Z):
+        V_total = np.zeros_like(X)
+        for charge in self.charges:
+            V_total += self.constants.Coulomb_Constant * charge.charge / np.sqrt((X - charge.position[0])**2 + (Y - charge.position[1])**2 + (Z - charge.position[2])**2)
+        return V_total
     
 class Spinning_Dipole(Point_Charge_System):
     def __init__(self, charge, radius, omega, dt):

@@ -5,7 +5,7 @@ from PIL import Image
 
 D = 2
 N = 300
-q = 1 #unit charge
+q = 100 #unit charge
 dt = 0.01
 
 # create system
@@ -24,9 +24,9 @@ total_time = .1
 current_time = 0
 while current_time < total_time:
     dipole_system.step()
-    #potential_field_func = dipole_system.get_potential_field()  # Create a callable potential field function
-    #potential_field_values = potential_field_func(X,Y,Z)
-    plt.contour([X,Y],1, cmap='viridis')
+    potential_field_func = dipole_system.get_potential_field(X,Y,Z)  # Create a callable potential field function
+    heatmap = plt.contourf(X,Y,potential_field_func, levels=20, cmap='viridis')
+    plt.colorbar(heatmap, label = 'Heat Map Value')
     current_time += dt
 
 

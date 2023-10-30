@@ -1,0 +1,5 @@
+FROM quay.io/fenicsproject/stable
+
+WORKDIR quay.io/fenicsproject/stable
+
+COPY . .
