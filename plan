@@ -1,3 +1,13 @@
 1. numerical solution
     need to get boundary conditions to do this
 2. simulation
+
+
+
+
+10/29/23
+1. plot charges
+2. be able to export a series of charges as a gif
+3. plot a vector field
+4. plot the potential as a contour mapping
+5. repeat 1-4 in 3D as well
