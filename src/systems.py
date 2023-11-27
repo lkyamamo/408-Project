@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import solver as sol
 
 class Constants:
     @property
@@ -13,13 +14,16 @@ class Point_Charge:
         self.charge = charge
         self.position = position
         
+class System:
+    self.constants = Constants()
 
-class Point_Charge_System:
+
+class Point_Charge_System(System):
     def __init__(self, charges):
         self.charges = charges
-        self.constants = Constants()
+        
 
-    def get_electric_field(self):
+    def get_electric_field(self, X, Y, Z):
         def electric_field(r):
             E = np.array([0.0,0.0,0.0])
             for q in self.charges:
@@ -32,12 +36,29 @@ class Point_Charge_System:
             return E
         return electric_field
     
+    #exports a numpy array with the same shape as X which spans the whole space
+    #each 
     def get_potential_field(self, X, Y, Z):
         V_total = np.zeros_like(X)
         for charge in self.charges:
             V_total += self.constants.Coulomb_Constant * charge.charge / np.sqrt((X - charge.position[0])**2 + (Y - charge.position[1])**2 + (Z - charge.position[2])**2)
         return V_total
     
+    """
+    #returns magnetic field as a function of a numpy 
+    def get_magnetic_field(self):
+        def magnetic_field(r):
+            B = np.array([0.0,0.0,0.0])
+            for q in self.charges:
+                for i in range(3):
+                    try:
+                        result = 
+                    except:
+                        result = 0
+                    B
+            return B
+    """
+            
 class Spinning_Dipole(Point_Charge_System):
     def __init__(self, charge, radius, omega, dt):
         super().__init__([Point_Charge(charge, np.array([radius, 0,0])), Point_Charge(-charge, np.array([-radius, 0, 0]))])
@@ -63,3 +84,6 @@ class Spinning_Dipole(Point_Charge_System):
             positions[0].append(self.charges[i].position[0])
             positions[1].append(self.charges[i].position[1])
         return positions
+
+class Continuous_Distribution_System(System):
+    def __init__(self, )

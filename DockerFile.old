@@ -1,0 +1,8 @@
+FROM quay.io/fenicsproject/stable
+
+WORKDIR quay.io/fenicsproject/stable
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install open3d
+
+COPY . .

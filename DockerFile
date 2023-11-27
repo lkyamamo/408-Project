@@ -1,5 +1,10 @@
-FROM quay.io/fenicsproject/stable
+FROM python:3
 
-WORKDIR quay.io/fenicsproject/stable
+WORKDIR /home/logan/Projects/408-Project
+
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install open3d \
+    pip install py-pde \
+    pip install h5py pandas mpi4py numba-mpi
 
 COPY . .

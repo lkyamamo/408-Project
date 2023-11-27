@@ -1,5 +1,5 @@
 import numpy as np
-import point_charge_systems as pcs
+import systems 
 import matplotlib.pyplot as plt
 from PIL import Image
 
@@ -9,7 +9,7 @@ q = 100 #unit charge
 dt = 0.01
 
 # create system
-dipole_system = pcs.Spinning_Dipole(q, 1, np.pi, dt)
+dipole_system = systems.Spinning_Dipole(q, 1, np.pi, dt)
 
 #setup
 x = np.linspace(-5, 5, 100)  # Generate x values
@@ -25,7 +25,7 @@ current_time = 0
 while current_time < total_time:
     dipole_system.step()
     potential_field_func = dipole_system.get_potential_field(X,Y,Z)  # Create a callable potential field function
-    heatmap = plt.contourf(X,Y,potential_field_func, levels=20, cmap='viridis')
+    heatmap = plt.contourf(X,Y,potential_field_func, levels=50, cmap='viridis')
     plt.colorbar(heatmap, label = 'Heat Map Value')
     current_time += dt
 
