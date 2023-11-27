@@ -13,3 +13,28 @@
 5. repeat 1-4 in 3D as well
 
 for as many entries in 
+
+
+
+11/26/2023
+1. use multipole expansion to determine V for dipole system
+2. use py-pde to obtain the E field from this
+3. directly calculate E field through superposition principle of particles
+4. use fenics to solve the poisson equation given the same charge distribution
+    a. 
+5. (optional) use a known maxwell eq application to output the E and V fields of the same system
+6. compare results with what was obtained through multipole expansion
+
+presentation
+1. go over quickly what we did in class for multipole expansion given a charge distribution and how to directly calculate for point particles
+2. show how it applies to the simple point diple case and show results of this method
+3. show that since we have simple distributions we are able to obtain the electric field through superposition of point particle electric fields
+4. go over limitations of this method
+    a. given more complex charge distributions will not be able to solve easily even if geometry has high symmetry
+5. go over what numerical solvers are actually doing
+    a. using calculus of variations to obtain the correct functions 
+    b. go over basic concept where you start with a trial function and continually apply variations to it till you obtain the "optimal" function
+6. show results of using this method with point particle distribution
+    a. explain necessary adjustments that were made in order to actually calculate something
+        i. approximation of delta function using continuous functions (gaussian?)
+    
