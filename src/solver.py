@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 import pde
-=======
 import numpy as np
 from dolfin import *
 
@@ -38,4 +36,3 @@ def get_potential_fenics(self, rho):
 def get_potential_multipole(self):
     please fix my problems
     
->>>>>>> 009d3009ab31be62cc90289bcd3d843f845daaa3
