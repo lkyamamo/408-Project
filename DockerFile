@@ -1,10 +1,44 @@
-FROM python:3
+FROM quay.io/fenicsproject/stable
 
-WORKDIR /home/logan/Projects/408-Project
+#following blocks from this link https://gist.github.com/lukoshkin/034dc718fdf2baff5ab216e487bbd831
+##############################
 
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install open3d \
-    pip install py-pde \
-    pip install h5py pandas mpi4py numba-mpi
+ENV USER mpitest
+ENV HOME /home/$USER
+ENV MPI_DIR=/opt/ompi
+ENV PATH="$MPI_DIR/bin:$HOME/.local/bin:$PATH"
+ENV LD_LIBRARY_PATH="$MPI_DIR/lib:$LD_LIBRARY_PATH"
+WORKDIR $HOME
+
+RUN apt-get -q update \
+    && apt-get install -y \
+    python3 python3-dev python3-pip \
+    gcc gfortran binutils \
+    && pip3 install --upgrade pip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ADD https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.4.tar.bz2 .
+RUN tar xf openmpi-3.1.4.tar.bz2 \
+    && cd openmpi-3.1.4 \
+    && ./configure --prefix=$MPI_DIR \
+    && make -j4 all \
+    && make install \
+    && cd .. && rm -rf \
+    openmpi-3.1.4 openmpi-3.1.4.tar.bz2 /tmp/*
+
+RUN groupadd -r mpitest \
+    && useradd -r -g mpitest $USER \
+    && chown -R mpitest:mpitest $HOME
+
+RUN pip3 install --user -U setuptools \
+    && pip3 install --user mpi4py
+#################################
+
+WORKDIR /home/working/project
+
+RUN pip install --no-cache-dir --upgrade pip 
+RUN pip install py-pde 
+RUN pip install h5py pandas numba-mpi
 
 COPY . .

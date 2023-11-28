@@ -15,7 +15,8 @@ class Point_Charge:
         self.position = position
         
 class System:
-    self.constants = Constants()
+    def __init__(self):
+        self.constants = Constants()
 
 
 class Point_Charge_System(System):
@@ -39,10 +40,9 @@ class Point_Charge_System(System):
     #exports a numpy array with the same shape as X which spans the whole space
     #each 
     def get_potential_field(self, X, Y, Z):
-        V_total = np.zeros_like(X)
-        for charge in self.charges:
-            V_total += self.constants.Coulomb_Constant * charge.charge / np.sqrt((X - charge.position[0])**2 + (Y - charge.position[1])**2 + (Z - charge.position[2])**2)
-        return V_total
+        result = sol.get_potential_superposition(self, X, Y, Z)
+        return result
+        
     
     """
     #returns magnetic field as a function of a numpy 
@@ -86,4 +86,6 @@ class Spinning_Dipole(Point_Charge_System):
         return positions
 
 class Continuous_Distribution_System(System):
-    def __init__(self, )
+    def __init__(self, distribution, basis):
+        self.distribution = distribution
+        self.basis = basis
