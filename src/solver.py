@@ -33,4 +33,5 @@ def get_potential_fenics(self, rho):
     solve(a == L, u, bc)
 
 def get_potential_multipole(self):
+    please fix my problems
     
