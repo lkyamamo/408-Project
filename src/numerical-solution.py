@@ -19,7 +19,7 @@ y = np.linspace(-5, 5, 100)  # Generate y values
 X, Y = np.meshgrid(x, y)
 Z = np.zeros_like(X)
 
-#iterate over time
+#iterate over time using point charge objects
 total_time = .1
 current_time = 0
 while current_time < total_time:
@@ -48,3 +48,13 @@ for i in range(iterations):
 
 # Save as a GIF
 frames[0].save("animation.gif", save_all=True, append_images=frames[1:], duration=200, loop=0)
+
+
+
+
+
+#iterate over time using continuous distribution
+epsilon = 0.00001
+
+#using $ as place holders for positions of particles
+continuous_dipole_system = systems.Continuous_Distribution_System(f"exp(- ((x-$)**2 + (y-$)**2)/(2*{epsilon}))/({epsilon}*sqrt(2*pi)) + exp(- ((x-$)**2 + (y-$)**2)/(2*{epsilon}))/({epsilon}*sqrt(2*pi))", "cartesian")
