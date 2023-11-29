@@ -39,6 +39,12 @@ WORKDIR /home/working/project
 
 RUN pip install --no-cache-dir --upgrade pip 
 RUN pip install py-pde 
-RUN pip install h5py pandas numba-mpi
+RUN pip install h5py pandas numba-mpi 
+RUN pip install matplotlib pyfftw tqdm
+
+#when using pde movie function, need ffmpeg
+#RUN apt-get -y update
+#RUN apt-get install -y ffmpeg
+
 
 COPY . .

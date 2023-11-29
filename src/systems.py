@@ -1,14 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from dolfin import *
-from pde import CartesianGrid, ScalarField, solve_poisson_equation
+from pde import *
 from sympy import *
 
 
 class Constants:
     @property
     def Coulomb_Constant(self):
-        return 8.99 * 10**9
+        
+        return 1
+
+        #real value
+        #return 8.99 * 10**9
     
 size = 10
 
@@ -18,12 +22,15 @@ class Point_Charge:
         self.position = position
         
 class System:
-    def __init__(self):
+    def __init__(self, dt):
         self.constants = Constants()
+        self.time = 0
+        self.dt = dt
 
 
 class Point_Charge_System(System):
-    def __init__(self, charges):
+    def __init__(self, charges, dt):
+        super().__init__(dt)
         self.charges = charges
         
 
@@ -86,9 +93,8 @@ class Point_Charge_System(System):
             
 class Spinning_Dipole(Point_Charge_System):
     def __init__(self, charge, radius, omega, dt):
-        super().__init__([Point_Charge(charge, np.array([radius, 0,0])), Point_Charge(-charge, np.array([-radius, 0, 0]))])
+        super().__init__([Point_Charge(charge, np.array([radius, 0,0])), Point_Charge(-charge, np.array([-radius, 0, 0]))], dt)
         self.omega = omega
-        self.dt = dt
         self.r = radius
     
     def step(self):
@@ -111,11 +117,26 @@ class Spinning_Dipole(Point_Charge_System):
         return positions
 
 class Dynamics:
-    def __init__(self, expression, basis):
-        self.expression = expression
+    def __init__(self, expressions, basis):
+
+        #list of list of expressions that dictate dynamics of distributions
+        #self.expressions[i] denotes the i'th center of a element of the distribution
+        #self.expressions[i][j] denotes j'th component of position vector of element i
+        self.expressions = expressions
         self.basis = basis
 
-    def evaluate(self):
+    #return list of vectors that is position of 
+    def evaluate(self, time):
+        output = []
+        for i in range(len(self.expressions)):
+            output.append(np.empty_like(self.expressions[i]))
+            for j in range(len(self.expressions[i])):
+                #convert string to expression then substitute t for value of time and evaluate
+                converted = sympify(self.expressions[i][j])
+                converted = converted.subs('t', time)
+                output[i][j] = converted.evalf()
+        return output
+
         
         
 
@@ -131,18 +152,11 @@ class Distribution:
     
     #returns expression 
     def get_expression(self):
-        if self.positions[0] == None:
-            raise "input necessary for expression"
-        
-        i = 0
-        instance = self.expression.find('$')
-        while(instance != -1):
-            self.expression[instance] = self.positions[i]
-            i += 1
-            instance = self.expression.find('$')
+        return self.expression
 
 class Continuous_Distribution_System(System):
-    def __init__(self, distribution, dynamics, basis):
+    def __init__(self, distribution, dynamics, basis, dt):
+        super().__init__(dt)
         self.distribution = Distribution(distribution, dynamics, basis)
         self.basis = basis
 
@@ -173,11 +187,32 @@ class Continuous_Distribution_System(System):
 
 
     def get_potential_pypde(self):
-        #https://en.wikipedia.org/wiki/Dirac_delta_function
-        weak_delta = self.distribution
+        
+        expression = self.distribution.get_expression()
 
-        grid = CartesianGrid([[0, 1],[0, 1]], 50, periodic=False)
-        field = ScalarField.from_expression(grid, weak_delta)
+        #substitute positions of elements into distribution expression
+        mapping = {0:'x', 1:'y', 2:'z'}
+        positions = self.distribution.dynamics.evaluate(self.time)
+
+        # Format the strings with three decimal places
+        formatted_positions = np.array([[f"{float(value):.3f}" for value in row] for row in positions], dtype=np.str_)
+        for i in range(len(formatted_positions)):
+            for j in range(len(formatted_positions[i])):
+                holder = mapping[j] + str(i)
+                expression = expression.replace(holder, formatted_positions[i][j])
+
+        expression = sympify(expression)
+
+        grid = CartesianGrid([[-5, 5],[-5, 5]], 300, periodic=False)
+        field = ScalarField.from_expression(grid, expression)
         result = solve_poisson_equation(field, bc=[[{"value": 0}, {"value": 0}], [{"value": 0}, {"value": 0}]])
+        print(f"solved for time={self.time}")
 
-        result.plot()
+        return result
+
+
+    def step(self):
+        self.time += self.dt
+
+
+#class ContinuousSpinningDipole(Continuous_Distribution_System):

@@ -1,12 +1,21 @@
-from pde import CartesianGrid, ScalarField, solve_poisson_equation
-from dolfin import *
+"""
+Create a movie from a storage
+=============================
 
-epsilon = 0.00001
-#https://en.wikipedia.org/wiki/Dirac_delta_function
-weak_delta = f"exp(- ((x-0.25)**2 + (y-0.25)**2)/(2*{epsilon}))/({epsilon}*sqrt(2*pi)) + exp(- ((x-0.75)**2 + (y-0.75)**2)/(2*{epsilon}))/({epsilon}*sqrt(2*pi))"
+This example shows how to create a movie from data stored during a simulation. Making
+movies requires that `ffmpeg` is installed in a standard location.
+"""
 
-grid = CartesianGrid([[0, 1],[0, 1]], 50, periodic=False)
-field = ScalarField.from_expression(grid, weak_delta)
-result = solve_poisson_equation(field, bc=[[{"value": 0}, {"value": 0}], [{"value": 0}, {"value": 0}]])
+from pde import DiffusionPDE, MemoryStorage, ScalarField, UnitGrid, movie_scalar
 
-result.plot()
+grid = UnitGrid([16, 16])  # generate grid
+state = ScalarField.random_uniform(grid, 0.2, 0.3)  # generate initial condition
+
+storage = MemoryStorage()  # create storage
+tracker = storage.tracker(interval=1)  # create associated tracker
+
+eq = DiffusionPDE()  # define the physics
+eq.solve(state, t_range=2, dt=0.005, tracker=tracker)
+
+# create movie from stored data
+movie_scalar(storage, "diffusion.mov")
